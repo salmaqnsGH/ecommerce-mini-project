@@ -5,6 +5,7 @@ import (
 	"mini-project-product/helper"
 	"mini-project-product/model/entity"
 	"mini-project-product/model/request"
+	"mini-project-product/model/response"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
@@ -60,5 +61,30 @@ func CreateCategory(c *fiber.Ctx) error {
 	}
 
 	response := helper.APIResponse("Succeed to POST data", nil, true, 1)
+	return c.JSON(response)
+}
+
+func GetCategoryById(c *fiber.Ctx) error {
+	// TODO: can only be accessed by admin
+	caetgoryId := c.Params("id")
+
+	var category entity.Category
+
+	err := db.DB.First(&category, "id = ?", caetgoryId).Error
+
+	if err != nil {
+		var errors []string
+		errors = append(errors, err.Error())
+		response := helper.APIResponse("Failed to GET data", errors, false, nil)
+
+		return c.JSON(response)
+	}
+
+	categoryResponse := response.GetCategoryByIdResponse{
+		ID:           category.ID,
+		NamaCategory: category.NamaCategory,
+	}
+
+	response := helper.APIResponse("Succeed to GET data", nil, true, categoryResponse)
 	return c.JSON(response)
 }
