@@ -88,3 +88,48 @@ func GetCategoryById(c *fiber.Ctx) error {
 	response := helper.APIResponse("Succeed to GET data", nil, true, categoryResponse)
 	return c.JSON(response)
 }
+
+func UpdateCategory(c *fiber.Ctx) error {
+	// TODO: can only be accessed by admin
+	categoryRequest := new(request.UpdateCategoryRequest)
+	if err := c.BodyParser(categoryRequest); err != nil {
+		var errors []string
+		errors = append(errors, err.Error())
+		response := helper.APIResponse("Failed to UPDATE data", errors, false, nil)
+
+		return c.JSON(response)
+	}
+
+	var validate = validator.New()
+	if err := validate.Struct(categoryRequest); err != nil {
+		errors := helper.FormatValidationError(err)
+		response := helper.APIResponse("Failed to POST data", errors, false, nil)
+
+		return c.JSON(response)
+	}
+
+	var category entity.Category
+	categoryId := c.Params("id")
+
+	err := db.DB.First(&category, "id = ?", categoryId).Error
+	if err != nil {
+		var errors []string
+		errors = append(errors, err.Error())
+		response := helper.APIResponse("Failed to UPDATE data", errors, false, nil)
+
+		return c.JSON(response)
+	}
+
+	category.NamaCategory = categoryRequest.NamaCategory
+	errUpdate := db.DB.Save(&category).Error
+	if errUpdate != nil {
+		var errors []string
+		errors = append(errors, errUpdate.Error())
+		response := helper.APIResponse("Failed to UPDATE data", errors, false, nil)
+
+		return c.JSON(response)
+	}
+
+	response := helper.APIResponse("Succeed to UPDATE data", nil, true, "")
+	return c.JSON(response)
+}
