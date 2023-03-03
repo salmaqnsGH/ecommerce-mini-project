@@ -133,3 +133,22 @@ func UpdateCategory(c *fiber.Ctx) error {
 	response := helper.APIResponse("Succeed to UPDATE data", nil, true, "")
 	return c.JSON(response)
 }
+
+func DeleteCategory(c *fiber.Ctx) error {
+	// TODO: can only be accessed by admin
+	caetgoryId := c.Params("id")
+
+	var category entity.Category
+
+	err := db.DB.Where("id = ?", caetgoryId).First(&category).Delete(&category).Error
+	if err != nil {
+		var errors []string
+		errors = append(errors, err.Error())
+		response := helper.APIResponse("Failed to DELETE data", errors, false, nil)
+
+		return c.JSON(response)
+	}
+
+	response := helper.APIResponse("Succeed to DELETE data", nil, true, "")
+	return c.JSON(response)
+}
