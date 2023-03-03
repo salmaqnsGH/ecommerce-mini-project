@@ -2,6 +2,7 @@ package controller
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"mini-project-product/helper"
@@ -41,5 +42,40 @@ func GetListProvince(c *fiber.Ctx) error {
 	response := helper.APIResponse("Succeed to GET data", nil, true, provincies)
 
 	return c.JSON(response)
+}
 
+func GetListCities(c *fiber.Ctx) error {
+	provinceId := c.Params("id")
+
+	url := fmt.Sprintf("https://www.emsifa.com/api-wilayah-indonesia/api/regencies/%s.json", provinceId)
+
+	result, err := http.Get(url)
+
+	if err != nil {
+		var errors []string
+		errors = append(errors, err.Error())
+		response := helper.APIResponse("Failed to GET data", errors, false, nil)
+
+		return c.JSON(response)
+	}
+
+	responseData, err := ioutil.ReadAll(result.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var provincies []response.GetListCitiesResponse
+	err = json.Unmarshal(responseData, &provincies)
+
+	if err != nil {
+		var errors []string
+		errors = append(errors, err.Error())
+		response := helper.APIResponse("Failed to GET data", errors, false, nil)
+
+		return c.JSON(response)
+	}
+
+	response := helper.APIResponse("Succeed to get data", nil, true, provincies)
+
+	return c.JSON(response)
 }
