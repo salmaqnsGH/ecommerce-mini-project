@@ -16,5 +16,6 @@ func GetUsers(r *fiber.App) {
 	r.Delete("api/v1/category/:id", controller.DeleteCategory)
 	r.Get("api/v1/provcity/listprovincies", controller.GetListProvince)
 	r.Get("api/v1/provcity/listcities/:id", controller.GetListCities)
+	r.Get("api/v1/provcity/detailprovince/:id", controller.GetDetailProvince)
 
 }
