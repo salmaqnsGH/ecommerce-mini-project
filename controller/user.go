@@ -179,3 +179,45 @@ func GetAlamatByID(c *fiber.Ctx) error {
 	response := helper.APIResponse("Succeed to GET data", nil, true, alamatResponse)
 	return c.JSON(response)
 }
+
+func CreateAlamat(c *fiber.Ctx) error {
+	// TODO: fix idUser from jwt
+	userId := 1
+
+	alamat := new(request.CreateAlamatRequest)
+	if err := c.BodyParser(alamat); err != nil {
+		var errors []string
+		errors = append(errors, err.Error())
+		response := helper.APIResponse("Failed to POST data", errors, false, nil)
+
+		return c.JSON(response)
+	}
+
+	var validate = validator.New()
+	if err := validate.Struct(alamat); err != nil {
+		errors := helper.FormatValidationError(err)
+		response := helper.APIResponse("Failed to POST data", errors, false, nil)
+
+		return c.JSON(response)
+	}
+
+	newAlamat := entity.Alamat{
+		IDUser:       userId,
+		JudulAlamat:  alamat.JudulAlamat,
+		NoTelp:       alamat.NoTelp,
+		NamaPenerima: alamat.NamaPenerima,
+		DetailAlamat: alamat.DetailAlamat,
+	}
+
+	errCreateAlamat := db.DB.Create(&newAlamat).Error
+	if errCreateAlamat != nil {
+		var errors []string
+		errors = append(errors, errCreateAlamat.Error())
+		response := helper.APIResponse("Failed to POST data", errors, false, nil)
+
+		return c.JSON(response)
+	}
+
+	response := helper.APIResponse("Succeed to POST data", nil, true, 1)
+	return c.JSON(response)
+}
