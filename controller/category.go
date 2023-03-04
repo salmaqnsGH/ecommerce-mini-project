@@ -80,7 +80,7 @@ func GetCategoryById(c *fiber.Ctx) error {
 		return c.JSON(response)
 	}
 
-	categoryResponse := response.GetCategoryByIdResponse{
+	categoryResponse := response.GetCategoryResponse{
 		ID:           category.ID,
 		NamaCategory: category.NamaCategory,
 	}

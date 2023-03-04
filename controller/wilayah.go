@@ -28,7 +28,7 @@ func GetListProvince(c *fiber.Ctx) error {
 		log.Fatal(err)
 	}
 
-	var provincies []response.GetListProvinceResponse
+	var provincies []response.GetProvinceResponse
 	err = json.Unmarshal(responseData, &provincies)
 
 	if err != nil {
@@ -64,7 +64,7 @@ func GetListCities(c *fiber.Ctx) error {
 		log.Fatal(err)
 	}
 
-	var provincies []response.GetListCitiesResponse
+	var provincies []response.GetCityResponse
 	err = json.Unmarshal(responseData, &provincies)
 
 	if err != nil {
@@ -100,7 +100,7 @@ func GetDetailProvince(c *fiber.Ctx) error {
 		log.Fatal(err)
 	}
 
-	var province response.GetListProvinceResponse
+	var province response.GetProvinceResponse
 	err = json.Unmarshal(responseData, &province)
 
 	if err != nil {
@@ -131,7 +131,7 @@ func GetDetailCity(c *fiber.Ctx) error {
 		log.Fatal(err)
 	}
 
-	var city response.GetListCitiesResponse
+	var city response.GetCityResponse
 	err = json.Unmarshal(responseData, &city)
 
 	response := helper.APIResponse("Succeed to get data", nil, true, city)

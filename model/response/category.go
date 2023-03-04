@@ -1,6 +1,6 @@
 package response
 
-type GetCategoryByIdResponse struct {
+type GetCategoryResponse struct {
 	ID           int    `json:"id"`
 	NamaCategory string `json:"nama_category"`
 }
