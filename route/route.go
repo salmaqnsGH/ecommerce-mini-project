@@ -29,4 +29,5 @@ func GetUsers(r *fiber.App) {
 	r.Put("api/v1/user/alamat/:id", controller.UpdateAlamat)
 	r.Delete("api/v1/user/alamat/:id", controller.DeleteAlamat)
 
+	r.Get("api/v1/toko/my", controller.GetMyToko)
 }
