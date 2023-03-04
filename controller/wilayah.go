@@ -123,3 +123,30 @@ func GetDetailProvince(c *fiber.Ctx) error {
 
 	return c.JSON(response)
 }
+
+func GetDetailCity(c *fiber.Ctx) error {
+	cityId := c.Params("id")
+
+	url := fmt.Sprintf("https://www.emsifa.com/api-wilayah-indonesia/api/regency/%s.json", cityId)
+
+	result, err := http.Get(url)
+
+	if err != nil {
+		var errors []string
+		errors = append(errors, err.Error())
+		response := helper.APIResponse("Failed to GET data", errors, false, nil)
+
+		return c.JSON(response)
+	}
+
+	responseData, err := ioutil.ReadAll(result.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var city response.GetListCitiesResponse
+	err = json.Unmarshal(responseData, &city)
+
+	response := helper.APIResponse("Succeed to get data", nil, true, city)
+	return c.JSON(response)
+}

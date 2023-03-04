@@ -17,5 +17,6 @@ func GetUsers(r *fiber.App) {
 	r.Get("api/v1/provcity/listprovincies", controller.GetListProvince)
 	r.Get("api/v1/provcity/listcities/:id", controller.GetListCities)
 	r.Get("api/v1/provcity/detailprovince/:id", controller.GetDetailProvince)
+	r.Get("api/v1/provcity/detailcity/:id", controller.GetDetailCity)
 
 }
