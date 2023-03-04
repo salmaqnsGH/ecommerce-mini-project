@@ -83,11 +83,13 @@ func GetListCities(c *fiber.Ctx) error {
 func GetDetailProvince(c *fiber.Ctx) error {
 	provinceId := c.Params("id")
 
-	result, err := http.Get("https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json")
+	url := fmt.Sprintf("http://www.emsifa.com/api-wilayah-indonesia/api/province/%s.json", provinceId)
 
-	if err != nil {
+	result, _ := http.Get(url)
+
+	if result.Status == "404 Not Found" {
 		var errors []string
-		errors = append(errors, err.Error())
+		errors = append(errors, "result not found")
 		response := helper.APIResponse("Failed to GET data", errors, false, nil)
 
 		return c.JSON(response)
@@ -98,29 +100,14 @@ func GetDetailProvince(c *fiber.Ctx) error {
 		log.Fatal(err)
 	}
 
-	var provincies []response.GetListProvinceResponse
-	err = json.Unmarshal(responseData, &provincies)
+	var province response.GetListProvinceResponse
+	err = json.Unmarshal(responseData, &province)
 
 	if err != nil {
-		var errors []string
-		errors = append(errors, err.Error())
-		response := helper.APIResponse("Failed to GET data", errors, false, nil)
-
-		return c.JSON(response)
-	}
-
-	var province response.GetListProvinceResponse
-	for i := 0; i < len(provincies); i++ {
-		if provinceId == provincies[i].ID {
-			province = response.GetListProvinceResponse{
-				ID:   provincies[i].ID,
-				Name: provincies[i].Name,
-			}
-		}
+		log.Fatal(err)
 	}
 
 	response := helper.APIResponse("Succeed to get data", nil, true, province)
-
 	return c.JSON(response)
 }
 
