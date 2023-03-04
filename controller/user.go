@@ -168,6 +168,7 @@ func GetAlamatByID(c *fiber.Ctx) error {
 
 		return c.JSON(response)
 	}
+
 	alamatResponse := response.GetAlamatResponse{
 		ID:           alamat.ID,
 		JudulAlamat:  alamat.JudulAlamat,
@@ -219,5 +220,56 @@ func CreateAlamat(c *fiber.Ctx) error {
 	}
 
 	response := helper.APIResponse("Succeed to POST data", nil, true, 1)
+	return c.JSON(response)
+}
+
+func UpdateAlamat(c *fiber.Ctx) error {
+	// TODO: fix idUser from jwt
+	userId := 1
+
+	alamatRequest := new(request.UpdateAlamatRequest)
+	if err := c.BodyParser(alamatRequest); err != nil {
+		var errors []string
+		errors = append(errors, err.Error())
+		response := helper.APIResponse("Failed to POST data", errors, false, nil)
+
+		return c.JSON(response)
+	}
+
+	var validate = validator.New()
+	if err := validate.Struct(alamatRequest); err != nil {
+		errors := helper.FormatValidationError(err)
+		response := helper.APIResponse("Failed to POST data", errors, false, nil)
+
+		return c.JSON(response)
+	}
+
+	var alamat entity.Alamat
+	alamatID := c.Params("id")
+
+	err := db.DB.First(&alamat, "id = ?", alamatID).Error
+	if err != nil {
+		var errors []string
+		errors = append(errors, err.Error())
+		response := helper.APIResponse("Failed to GET data", errors, false, nil)
+
+		return c.JSON(response)
+	}
+
+	alamat.IDUser = userId
+	alamat.NoTelp = alamatRequest.NoTelp
+	alamat.NamaPenerima = alamatRequest.NamaPenerima
+	alamat.DetailAlamat = alamatRequest.DetailAlamat
+
+	errUpdate := db.DB.Save(&alamat).Error
+	if errUpdate != nil {
+		var errors []string
+		errors = append(errors, errUpdate.Error())
+		response := helper.APIResponse("Failed to UPDATE data", errors, false, nil)
+
+		return c.JSON(response)
+	}
+
+	response := helper.APIResponse("Succeed to UPDATE data", nil, true, "")
 	return c.JSON(response)
 }

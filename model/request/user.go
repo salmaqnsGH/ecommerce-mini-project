@@ -19,3 +19,10 @@ type CreateAlamatRequest struct {
 	NoTelp       string `json:"no_telp" validate:"required"`
 	DetailAlamat string `json:"detail_alamat" validate:"required"`
 }
+
+type UpdateAlamatRequest struct {
+	IDUser       int    `json:"id_user"`
+	NamaPenerima string `json:"nama_penerima" validate:"required"`
+	NoTelp       string `json:"no_telp" validate:"required"`
+	DetailAlamat string `json:"detail_alamat" validate:"required"`
+}
