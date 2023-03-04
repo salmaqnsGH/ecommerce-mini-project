@@ -28,3 +28,11 @@ type UpdateProfileResponse struct {
 	IdKota       string    `json:"id_kota"`
 	IsAdmin      bool      `json:"is_admin"`
 }
+
+type GetAlamatResponse struct {
+	ID           int    `json:"id"`
+	JudulAlamat  string `json:"judul_alamat"`
+	NamaPenerima string `json:"nama_penerima"`
+	NoTelp       string `json:"no_telp"`
+	DetailAlamat string `json:"detail_alamat"`
+}

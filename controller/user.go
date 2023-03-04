@@ -119,3 +119,37 @@ func UpdateProfile(c *fiber.Ctx) error {
 	response := helper.APIResponse("Succeed to UPDATE data", nil, true, userResponse)
 	return c.JSON(response)
 }
+
+func GetAlamat(c *fiber.Ctx) error {
+	// TODO: fix idUser from jwt
+	userId := 1
+
+	var alamats []entity.Alamat
+
+	err := db.DB.Find(&alamats, "id_user = ?", userId).Error
+
+	if err != nil {
+		var errors []string
+		errors = append(errors, err.Error())
+		response := helper.APIResponse("Failed to GET data", errors, false, nil)
+
+		return c.JSON(response)
+	}
+
+	var alamatResponses []response.GetAlamatResponse
+
+	for _, alamat := range alamats {
+		alamatResponse := response.GetAlamatResponse{
+			ID:           alamat.ID,
+			JudulAlamat:  alamat.JudulAlamat,
+			NoTelp:       alamat.NoTelp,
+			NamaPenerima: alamat.NamaPenerima,
+			DetailAlamat: alamat.DetailAlamat,
+		}
+
+		alamatResponses = append(alamatResponses, alamatResponse)
+	}
+
+	response := helper.APIResponse("Succeed to GET data", nil, true, alamatResponses)
+	return c.JSON(response)
+}
