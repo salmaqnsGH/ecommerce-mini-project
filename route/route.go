@@ -30,4 +30,5 @@ func GetUsers(r *fiber.App) {
 	r.Delete("api/v1/user/alamat/:id", controller.DeleteAlamat)
 
 	r.Get("api/v1/toko/my", controller.GetMyToko)
+	r.Get("api/v1/toko/:id", controller.GetTokoByID)
 }
