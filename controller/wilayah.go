@@ -13,11 +13,11 @@ import (
 )
 
 func GetListProvince(c *fiber.Ctx) error {
-	result, err := http.Get("https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json")
+	result, _ := http.Get("https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json")
 
-	if err != nil {
+	if result.Status == "404 Not Found" {
 		var errors []string
-		errors = append(errors, err.Error())
+		errors = append(errors, "result not found")
 		response := helper.APIResponse("Failed to GET data", errors, false, nil)
 
 		return c.JSON(response)
@@ -39,7 +39,7 @@ func GetListProvince(c *fiber.Ctx) error {
 		return c.JSON(response)
 	}
 
-	response := helper.APIResponse("Succeed to GET data", nil, true, provincies)
+	response := helper.APIResponse("Succeed to get data", nil, true, provincies)
 
 	return c.JSON(response)
 }
@@ -49,11 +49,11 @@ func GetListCities(c *fiber.Ctx) error {
 
 	url := fmt.Sprintf("https://www.emsifa.com/api-wilayah-indonesia/api/regencies/%s.json", provinceId)
 
-	result, err := http.Get(url)
+	result, _ := http.Get(url)
 
-	if err != nil {
+	if result.Status == "404 Not Found" {
 		var errors []string
-		errors = append(errors, err.Error())
+		errors = append(errors, "result not found")
 		response := helper.APIResponse("Failed to GET data", errors, false, nil)
 
 		return c.JSON(response)
@@ -116,11 +116,11 @@ func GetDetailCity(c *fiber.Ctx) error {
 
 	url := fmt.Sprintf("https://www.emsifa.com/api-wilayah-indonesia/api/regency/%s.json", cityId)
 
-	result, err := http.Get(url)
+	result, _ := http.Get(url)
 
-	if err != nil {
+	if result.Status == "404 Not Found" {
 		var errors []string
-		errors = append(errors, err.Error())
+		errors = append(errors, "result not found")
 		response := helper.APIResponse("Failed to GET data", errors, false, nil)
 
 		return c.JSON(response)
