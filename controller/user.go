@@ -118,5 +118,4 @@ func UpdateProfile(c *fiber.Ctx) error {
 
 	response := helper.APIResponse("Succeed to UPDATE data", nil, true, userResponse)
 	return c.JSON(response)
-
 }
