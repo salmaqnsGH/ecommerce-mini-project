@@ -153,3 +153,29 @@ func GetAlamat(c *fiber.Ctx) error {
 	response := helper.APIResponse("Succeed to GET data", nil, true, alamatResponses)
 	return c.JSON(response)
 }
+
+func GetAlamatByID(c *fiber.Ctx) error {
+	alamatID := c.Params("id")
+
+	var alamat entity.Alamat
+
+	err := db.DB.First(&alamat, "id = ?", alamatID).Error
+
+	if err != nil {
+		var errors []string
+		errors = append(errors, err.Error())
+		response := helper.APIResponse("Failed to GET data", errors, false, nil)
+
+		return c.JSON(response)
+	}
+	alamatResponse := response.GetAlamatResponse{
+		ID:           alamat.ID,
+		JudulAlamat:  alamat.JudulAlamat,
+		NoTelp:       alamat.NoTelp,
+		NamaPenerima: alamat.NamaPenerima,
+		DetailAlamat: alamat.DetailAlamat,
+	}
+
+	response := helper.APIResponse("Succeed to GET data", nil, true, alamatResponse)
+	return c.JSON(response)
+}

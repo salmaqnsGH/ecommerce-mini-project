@@ -24,5 +24,5 @@ func GetUsers(r *fiber.App) {
 	r.Get("api/v1/user", controller.GetProfile)
 	r.Put("api/v1/user", controller.UpdateProfile)
 	r.Get("api/v1/user/alamat", controller.GetAlamat)
-
+	r.Get("api/v1/user/alamat/:id", controller.GetAlamatByID)
 }
