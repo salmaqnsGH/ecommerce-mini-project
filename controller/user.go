@@ -273,3 +273,22 @@ func UpdateAlamat(c *fiber.Ctx) error {
 	response := helper.APIResponse("Succeed to UPDATE data", nil, true, "")
 	return c.JSON(response)
 }
+
+func DeleteAlamat(c *fiber.Ctx) error {
+	// TODO: can only be accessed by admin
+	alamatID := c.Params("id")
+
+	var alamat entity.Alamat
+
+	err := db.DB.Where("id = ?", alamatID).First(&alamat).Delete(&alamat).Error
+	if err != nil {
+		var errors []string
+		errors = append(errors, err.Error())
+		response := helper.APIResponse("Failed to DELETE data", errors, false, nil)
+
+		return c.JSON(response)
+	}
+
+	response := helper.APIResponse("Succeed to DELETE data", nil, true, "")
+	return c.JSON(response)
+}

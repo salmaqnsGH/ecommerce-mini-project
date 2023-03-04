@@ -27,5 +27,6 @@ func GetUsers(r *fiber.App) {
 	r.Get("api/v1/user/alamat/:id", controller.GetAlamatByID)
 	r.Post("api/v1/user/alamat", controller.CreateAlamat)
 	r.Put("api/v1/user/alamat/:id", controller.UpdateAlamat)
+	r.Delete("api/v1/user/alamat/:id", controller.DeleteAlamat)
 
 }
