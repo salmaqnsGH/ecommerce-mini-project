@@ -8,6 +8,7 @@ import (
 	"mini-project-product/model/entity"
 	"mini-project-product/model/request"
 	"mini-project-product/model/response"
+	"strconv"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
@@ -225,5 +226,80 @@ func GetProdukByID(c *fiber.Ctx) error {
 	}
 
 	response := helper.APIResponse("Succeed to GET data", nil, true, produkResponse)
+	return c.JSON(response)
+}
+
+func GetAllProduct(c *fiber.Ctx) error {
+	requestToken := c.Get("token")
+	isValid, _, err := middleware.CheckValidToken(requestToken)
+	if err != nil {
+		var errors []string
+		errors = append(errors, err.Error())
+		response := helper.APIResponse("Failed to GET data", errors, false, nil)
+
+		return c.JSON(response)
+	}
+
+	if !isValid {
+		var errors []string
+		errors = append(errors, "Unauthorized")
+		response := helper.APIResponse("Failed to GET data", errors, false, nil)
+
+		return c.JSON(response)
+	}
+
+	queryNamaProduk := c.Query("nama_produk")
+	queryLimit := c.Query("limit")
+	queryPage := c.Query("page")
+	queryCategoryID := c.Query("category_id")
+	queryTokoID := c.Query("toko_id")
+	queryMaxHarga := c.Query("max_harga")
+	queryMinHarga := c.Query("min_harga")
+
+	pageSize, err := strconv.Atoi(queryLimit)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	page, err := strconv.Atoi(queryPage)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	if pageSize < 0 {
+		pageSize = 0
+	}
+
+	if page < 0 {
+		page = 0
+	}
+
+	offset := (page - 1) * pageSize
+
+	var produks []entity.Produk
+
+	err = db.DB.Where("nama_produk LIKE ? AND id_category = ? AND id_toko = ? AND harga_reseller <= ? AND harga_reseller <= ?", "%"+queryNamaProduk+"%", queryCategoryID, queryTokoID, queryMaxHarga, queryMinHarga).Limit(pageSize).Offset(offset).Find(&produks).Error
+	if err != nil {
+		var errors []string
+		errors = append(errors, err.Error())
+		response := helper.APIResponse("Failed to GET data", errors, false, nil)
+
+		return c.JSON(response)
+	}
+
+	// var tokoResponses []response.GetTokoResponse
+
+	// for _, toko := range tokos {
+	// 	alamatResponse := response.GetTokoResponse{
+	// 		ID:       toko.ID,
+	// 		NamaToko: toko.NamaToko,
+	// 		URLFoto:  toko.URLFoto,
+	// 		IDUser:   toko.IDUser,
+	// 	}
+
+	// 	tokoResponses = append(tokoResponses, alamatResponse)
+	// }
+
+	response := helper.APIResponse("Succeed to GET data", nil, true, produks)
 	return c.JSON(response)
 }

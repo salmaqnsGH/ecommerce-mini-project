@@ -71,8 +71,8 @@ CREATE TABLE produks (
     id_category         INT NOT NULL,
     nama_produk         VARCHAR(255),
     slug                VARCHAR(255),
-    harga_reseller      VARCHAR(255),
-    harga_konsumen      VARCHAR(255),
+    harga_reseller      INT,
+    harga_konsumen      INT,
     stok                INT,
     deskripsi           TEXT,
     created_at          DATETIME,
@@ -129,15 +129,15 @@ ALTER TABLE detail_trxs ADD FOREIGN KEY (id_trx) REFERENCES trxs(id);
 ALTER TABLE detail_trxs ADD FOREIGN KEY (id_log_produk) REFERENCES log_produks(id);
 ALTER TABLE detail_trxs ADD FOREIGN KEY (id_toko) REFERENCES tokos(id);
 
--- INSERT INTO users VALUES (1, "nama", "sandi", "0085999999111", CURRENT_TIMESTAMP, "P", "tentang", "pekerjajan", "email@mail.com", "1", "1", true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
--- INSERT INTO categories VALUES (1, "nama_category", CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
--- INSERT INTO tokos VALUES (1, 1, "nama_toko","url_foto", CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
--- INSERT INTO alamats VALUES (1, 1, "judul_alamat", "nama_penerima", "085225226336", "detail_alamat", CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
--- INSERT INTO trxs VALUES (1, 1, 1, 1000, "kode_invoice", "method_bayar", CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
--- INSERT INTO produks VALUES (1, 1, 1, "nama_produk", "slug", "harga_reseller", "harga_konsumen", 10, "desc", CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
--- INSERT INTO foto_produks VALUES (1, 1, "url", CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
--- INSERT INTO log_produks VALUES (1, 1, 1, 1, "nama_produk", "slug", "harga_reseller", "harga_konsumen", "desc", CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
--- INSERT INTO detail_trxs VALUES (1, 1, 1, 1, 11, 2000, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+INSERT INTO users VALUES (1, "nama", "sandi", "0085999999111", CURRENT_TIMESTAMP, "P", "tentang", "pekerjajan", "email@mail.com", "1", "1", true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+INSERT INTO categories VALUES (1, "nama_category", CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+INSERT INTO tokos VALUES (1, 1, "nama_toko","url_foto", CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+INSERT INTO alamats VALUES (1, 1, "judul_alamat", "nama_penerima", "085225226336", "detail_alamat", CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+INSERT INTO trxs VALUES (1, 1, 1, 1000, "kode_invoice", "method_bayar", CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+INSERT INTO produks VALUES (1, 1, 1, "nama_produk", "slug",15000, 17000, 10, "desc", CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+INSERT INTO foto_produks VALUES (1, 1, "url", CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+INSERT INTO log_produks VALUES (1, 1, 1, 1, "nama_produk", "slug", 15000, 17000, "desc", CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+INSERT INTO detail_trxs VALUES (1, 1, 1, 1, 11, 2000, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 
 

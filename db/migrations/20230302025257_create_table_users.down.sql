@@ -1,3 +1,4 @@
+DROP TABLE detail_trxs;
 DROP TABLE log_produks;
 DROP TABLE foto_produks;
 DROP TABLE produks;

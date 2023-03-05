@@ -36,5 +36,6 @@ func GetUsers(r *fiber.App) {
 
 	r.Post("api/v1/product", controller.CreateProduct)
 	r.Get("api/v1/product/:id", controller.GetProdukByID)
+	r.Get("api/v1/product", controller.GetAllProduct)
 
 }
