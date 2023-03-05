@@ -106,7 +106,7 @@ func UpdateToko(c *fiber.Ctx) error {
 		return c.JSON(response)
 	}
 
-	path := fmt.Sprintf("images/%d-%s", userId, file.Filename)
+	path := fmt.Sprintf("images/%s", file.Filename)
 	err = c.SaveFile(file, path)
 	if err != nil {
 		var errors []string
