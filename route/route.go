@@ -32,4 +32,5 @@ func GetUsers(r *fiber.App) {
 	r.Get("api/v1/toko/my", controller.GetMyToko)
 	r.Get("api/v1/toko/:id", controller.GetTokoByID)
 	r.Put("api/v1/toko/:id", controller.UpdateToko)
+	r.Get("api/v1/toko", controller.GetAllToko)
 }

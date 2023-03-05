@@ -8,12 +8,31 @@ import (
 	"mini-project-product/model/entity"
 	"mini-project-product/model/request"
 	"mini-project-product/model/response"
+	"strconv"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 )
 
 func GetMyToko(c *fiber.Ctx) error {
+	requestToken := c.Get("token")
+	isValid, _, err := middleware.CheckValidToken(requestToken)
+	if err != nil {
+		var errors []string
+		errors = append(errors, err.Error())
+		response := helper.APIResponse("Failed to GET data", errors, false, nil)
+
+		return c.JSON(response)
+	}
+
+	if !isValid {
+		var errors []string
+		errors = append(errors, "Unauthorized")
+		response := helper.APIResponse("Failed to GET data", errors, false, nil)
+
+		return c.JSON(response)
+	}
+
 	userData, err := middleware.GetUserData(c)
 	if err != nil {
 		var errors []string
@@ -53,11 +72,29 @@ func GetMyToko(c *fiber.Ctx) error {
 }
 
 func GetTokoByID(c *fiber.Ctx) error {
+	requestToken := c.Get("token")
+	isValid, _, err := middleware.CheckValidToken(requestToken)
+	if err != nil {
+		var errors []string
+		errors = append(errors, err.Error())
+		response := helper.APIResponse("Failed to GET data", errors, false, nil)
+
+		return c.JSON(response)
+	}
+
+	if !isValid {
+		var errors []string
+		errors = append(errors, "Unauthorized")
+		response := helper.APIResponse("Failed to GET data", errors, false, nil)
+
+		return c.JSON(response)
+	}
+
 	tokoID := c.Params("id")
 
 	var toko entity.Toko
 
-	err := db.DB.First(&toko, "id = ?", tokoID).Error
+	err = db.DB.First(&toko, "id = ?", tokoID).Error
 
 	if err != nil {
 		var errors []string
@@ -78,6 +115,24 @@ func GetTokoByID(c *fiber.Ctx) error {
 }
 
 func UpdateToko(c *fiber.Ctx) error {
+	requestToken := c.Get("token")
+	isValid, _, err := middleware.CheckValidToken(requestToken)
+	if err != nil {
+		var errors []string
+		errors = append(errors, err.Error())
+		response := helper.APIResponse("Failed to GET data", errors, false, nil)
+
+		return c.JSON(response)
+	}
+
+	if !isValid {
+		var errors []string
+		errors = append(errors, "Unauthorized")
+		response := helper.APIResponse("Failed to GET data", errors, false, nil)
+
+		return c.JSON(response)
+	}
+
 	userData, err := middleware.GetUserData(c)
 	if err != nil {
 		var errors []string
@@ -146,5 +201,76 @@ func UpdateToko(c *fiber.Ctx) error {
 	}
 
 	response := helper.APIResponse("Succeed to UPDATE data", nil, true, "Update toko succeed")
+	return c.JSON(response)
+}
+
+func GetAllToko(c *fiber.Ctx) error {
+	requestToken := c.Get("token")
+	isValid, _, err := middleware.CheckValidToken(requestToken)
+	if err != nil {
+		var errors []string
+		errors = append(errors, err.Error())
+		response := helper.APIResponse("Failed to GET data", errors, false, nil)
+
+		return c.JSON(response)
+	}
+
+	if !isValid {
+		var errors []string
+		errors = append(errors, "Unauthorized")
+		response := helper.APIResponse("Failed to GET data", errors, false, nil)
+
+		return c.JSON(response)
+	}
+
+	queryLimit := c.Query("limit")
+	queryPage := c.Query("page")
+	queryNama := c.Query("nama")
+
+	pageSize, err := strconv.Atoi(queryLimit)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	page, err := strconv.Atoi(queryPage)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	if pageSize < 0 {
+		pageSize = 0
+	}
+
+	if page < 0 {
+		page = 0
+	}
+
+	offset := (page - 1) * pageSize
+
+	var tokos []entity.Toko
+
+	err = db.DB.Where("nama_toko LIKE ?", "%"+queryNama+"%").Limit(pageSize).Offset(offset).Find(&tokos).Error
+	if err != nil {
+		var errors []string
+		errors = append(errors, err.Error())
+		response := helper.APIResponse("Failed to GET data", errors, false, nil)
+
+		return c.JSON(response)
+	}
+
+	var tokoResponses []response.GetTokoResponse
+
+	for _, toko := range tokos {
+		alamatResponse := response.GetTokoResponse{
+			ID:       toko.ID,
+			NamaToko: toko.NamaToko,
+			URLFoto:  toko.URLFoto,
+			IDUser:   toko.IDUser,
+		}
+
+		tokoResponses = append(tokoResponses, alamatResponse)
+	}
+
+	response := helper.APIResponse("Succeed to GET data", nil, true, tokoResponses)
 	return c.JSON(response)
 }
