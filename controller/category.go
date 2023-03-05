@@ -13,7 +13,6 @@ import (
 )
 
 func GetCategories(c *fiber.Ctx) error {
-	// TODO: can only be accessed by admin
 	isAdmin, err := middleware.IsAdmin(c)
 
 	if err != nil {
@@ -22,7 +21,7 @@ func GetCategories(c *fiber.Ctx) error {
 
 	if !isAdmin {
 		var errors []string
-		errors = append(errors, "anda bukan admin bos!")
+		errors = append(errors, "Access denied")
 		response := helper.APIResponse("Failed to GET data", errors, false, nil)
 
 		return c.JSON(response)
@@ -44,7 +43,20 @@ func GetCategories(c *fiber.Ctx) error {
 }
 
 func CreateCategory(c *fiber.Ctx) error {
-	// TODO: can only be accessed by admin
+	isAdmin, err := middleware.IsAdmin(c)
+
+	if err != nil {
+		return err
+	}
+
+	if !isAdmin {
+		var errors []string
+		errors = append(errors, "Access denied")
+		response := helper.APIResponse("Failed to GET data", errors, false, nil)
+
+		return c.JSON(response)
+	}
+
 	category := new(request.CreateCategoryRequest)
 	if err := c.BodyParser(category); err != nil {
 		var errors []string
@@ -80,12 +92,25 @@ func CreateCategory(c *fiber.Ctx) error {
 }
 
 func GetCategoryById(c *fiber.Ctx) error {
-	// TODO: can only be accessed by admin
+	isAdmin, err := middleware.IsAdmin(c)
+
+	if err != nil {
+		return err
+	}
+
+	if !isAdmin {
+		var errors []string
+		errors = append(errors, "Access denied")
+		response := helper.APIResponse("Failed to GET data", errors, false, nil)
+
+		return c.JSON(response)
+	}
+
 	caetgoryId := c.Params("id")
 
 	var category entity.Category
 
-	err := db.DB.First(&category, "id = ?", caetgoryId).Error
+	err = db.DB.First(&category, "id = ?", caetgoryId).Error
 
 	if err != nil {
 		var errors []string
@@ -105,7 +130,20 @@ func GetCategoryById(c *fiber.Ctx) error {
 }
 
 func UpdateCategory(c *fiber.Ctx) error {
-	// TODO: can only be accessed by admin
+	isAdmin, err := middleware.IsAdmin(c)
+
+	if err != nil {
+		return err
+	}
+
+	if !isAdmin {
+		var errors []string
+		errors = append(errors, "Access denied")
+		response := helper.APIResponse("Failed to GET data", errors, false, nil)
+
+		return c.JSON(response)
+	}
+
 	categoryRequest := new(request.UpdateCategoryRequest)
 	if err := c.BodyParser(categoryRequest); err != nil {
 		var errors []string
@@ -126,7 +164,7 @@ func UpdateCategory(c *fiber.Ctx) error {
 	var category entity.Category
 	categoryId := c.Params("id")
 
-	err := db.DB.First(&category, "id = ?", categoryId).Error
+	err = db.DB.First(&category, "id = ?", categoryId).Error
 	if err != nil {
 		var errors []string
 		errors = append(errors, err.Error())
@@ -150,12 +188,25 @@ func UpdateCategory(c *fiber.Ctx) error {
 }
 
 func DeleteCategory(c *fiber.Ctx) error {
-	// TODO: can only be accessed by admin
+	isAdmin, err := middleware.IsAdmin(c)
+
+	if err != nil {
+		return err
+	}
+
+	if !isAdmin {
+		var errors []string
+		errors = append(errors, "Access denied")
+		response := helper.APIResponse("Failed to GET data", errors, false, nil)
+
+		return c.JSON(response)
+	}
+
 	caetgoryId := c.Params("id")
 
 	var category entity.Category
 
-	err := db.DB.Where("id = ?", caetgoryId).First(&category).Delete(&category).Error
+	err = db.DB.Where("id = ?", caetgoryId).First(&category).Delete(&category).Error
 	if err != nil {
 		var errors []string
 		errors = append(errors, err.Error())

@@ -3,6 +3,7 @@ package controller
 import (
 	"mini-project-product/db"
 	"mini-project-product/helper"
+	"mini-project-product/middleware"
 	"mini-project-product/model/entity"
 	"mini-project-product/model/request"
 	"mini-project-product/model/response"
@@ -13,12 +14,19 @@ import (
 )
 
 func GetProfile(c *fiber.Ctx) error {
-	// TODO: fix idUser from jwt
-	userId := 2
+	userData, err := middleware.GetUserData(c)
+	if err != nil {
+		var errors []string
+		errors = append(errors, err.Error())
+		response := helper.APIResponse("Failed to GET data", errors, false, nil)
 
+		return c.JSON(response)
+	}
+
+	userId := userData.ID
 	var user entity.User
 
-	err := db.DB.First(&user, "id = ?", userId).Error
+	err = db.DB.First(&user, "id = ?", userId).Error
 
 	if err != nil {
 		var errors []string
@@ -47,7 +55,17 @@ func GetProfile(c *fiber.Ctx) error {
 }
 
 func UpdateProfile(c *fiber.Ctx) error {
-	// TODO: fix idUser from jwt
+	userData, err := middleware.GetUserData(c)
+	if err != nil {
+		var errors []string
+		errors = append(errors, err.Error())
+		response := helper.APIResponse("Failed to GET data", errors, false, nil)
+
+		return c.JSON(response)
+	}
+
+	userId := userData.ID
+
 	userRequest := new(request.UpdateProfileRequest)
 	if err := c.BodyParser(userRequest); err != nil {
 		var errors []string
@@ -72,10 +90,7 @@ func UpdateProfile(c *fiber.Ctx) error {
 		return err
 	}
 
-	// TODO: fix userId from wt
 	var user entity.User
-	userId := 3
-
 	err = db.DB.First(&user, "id = ?", userId).Error
 	if err != nil {
 		var errors []string
@@ -121,12 +136,19 @@ func UpdateProfile(c *fiber.Ctx) error {
 }
 
 func GetAlamat(c *fiber.Ctx) error {
-	// TODO: fix idUser from jwt
-	userId := 1
+	userData, err := middleware.GetUserData(c)
+	if err != nil {
+		var errors []string
+		errors = append(errors, err.Error())
+		response := helper.APIResponse("Failed to GET data", errors, false, nil)
 
+		return c.JSON(response)
+	}
+
+	userId := userData.ID
 	var alamats []entity.Alamat
 
-	err := db.DB.Find(&alamats, "id_user = ?", userId).Error
+	err = db.DB.Find(&alamats, "id_user = ?", userId).Error
 
 	if err != nil {
 		var errors []string
@@ -182,8 +204,16 @@ func GetAlamatByID(c *fiber.Ctx) error {
 }
 
 func CreateAlamat(c *fiber.Ctx) error {
-	// TODO: fix idUser from jwt
-	userId := 1
+	userData, err := middleware.GetUserData(c)
+	if err != nil {
+		var errors []string
+		errors = append(errors, err.Error())
+		response := helper.APIResponse("Failed to GET data", errors, false, nil)
+
+		return c.JSON(response)
+	}
+
+	userId := userData.ID
 
 	alamat := new(request.CreateAlamatRequest)
 	if err := c.BodyParser(alamat); err != nil {
@@ -224,8 +254,16 @@ func CreateAlamat(c *fiber.Ctx) error {
 }
 
 func UpdateAlamat(c *fiber.Ctx) error {
-	// TODO: fix idUser from jwt
-	userId := 1
+	userData, err := middleware.GetUserData(c)
+	if err != nil {
+		var errors []string
+		errors = append(errors, err.Error())
+		response := helper.APIResponse("Failed to GET data", errors, false, nil)
+
+		return c.JSON(response)
+	}
+
+	userId := userData.ID
 
 	alamatRequest := new(request.UpdateAlamatRequest)
 	if err := c.BodyParser(alamatRequest); err != nil {
@@ -247,7 +285,7 @@ func UpdateAlamat(c *fiber.Ctx) error {
 	var alamat entity.Alamat
 	alamatID := c.Params("id")
 
-	err := db.DB.First(&alamat, "id = ?", alamatID).Error
+	err = db.DB.First(&alamat, "id = ?", alamatID).Error
 	if err != nil {
 		var errors []string
 		errors = append(errors, err.Error())
@@ -275,12 +313,28 @@ func UpdateAlamat(c *fiber.Ctx) error {
 }
 
 func DeleteAlamat(c *fiber.Ctx) error {
-	// TODO: can only be accessed by admin
-	alamatID := c.Params("id")
+	requestToken := c.Get("token")
+	isValid, _, err := middleware.CheckValidToken(requestToken)
+	if err != nil {
+		var errors []string
+		errors = append(errors, err.Error())
+		response := helper.APIResponse("Failed to DELETE data", errors, false, nil)
 
+		return c.JSON(response)
+	}
+
+	if !isValid {
+		var errors []string
+		errors = append(errors, "Unauthorized")
+		response := helper.APIResponse("Failed to DELETE data", errors, false, nil)
+
+		return c.JSON(response)
+	}
+
+	alamatID := c.Params("id")
 	var alamat entity.Alamat
 
-	err := db.DB.Where("id = ?", alamatID).First(&alamat).Delete(&alamat).Error
+	err = db.DB.Where("id = ?", alamatID).First(&alamat).Delete(&alamat).Error
 	if err != nil {
 		var errors []string
 		errors = append(errors, err.Error())

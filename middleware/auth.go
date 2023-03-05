@@ -32,8 +32,26 @@ func EncodeJwt(payload entity.UserClaims) (string, error) {
 
 func DecodeJwt(tokenString string) (*entity.UserClaims, error) {
 
+	isValid, token, err := CheckValidToken(tokenString)
+	if err != nil {
+		return nil, err
+	}
+
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && isValid {
+		user := entity.UserClaims{}
+		err := mapstructure.Decode(claims, &user)
+		if err != nil {
+			return nil, err
+		}
+		return &user, nil
+	}
+
+	return nil, err
+}
+
+func CheckValidToken(tokenString string) (bool, *jwt.Token, error) {
 	if tokenString == "" {
-		return nil, fmt.Errorf("Error token nil")
+		return false, nil, fmt.Errorf("Unauthorized")
 	}
 
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
@@ -46,24 +64,28 @@ func DecodeJwt(tokenString string) (*entity.UserClaims, error) {
 		return hmacSecret, nil
 	})
 
-	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		user := entity.UserClaims{}
-		err := mapstructure.Decode(claims, &user)
-		if err != nil {
-			return nil, err
-		}
-		return &user, nil
+	if err != nil {
+		return false, nil, err
 	}
 
-	return nil, err
+	return token.Valid, token, nil
+}
+
+func GetUserData(c *fiber.Ctx) (*entity.UserClaims, error) {
+	token := c.Get("token")
+	decodedToken, err := DecodeJwt(token)
+	if err != nil {
+		return nil, err
+	}
+
+	return decodedToken, nil
 }
 
 func IsAdmin(c *fiber.Ctx) (bool, error) {
-	token := c.Get("token")
-	decodedToken, err := DecodeJwt(token)
+	userData, err := GetUserData(c)
 	if err != nil {
 		return false, err
 	}
 
-	return decodedToken.IsAdmin, nil
+	return userData.IsAdmin, nil
 }

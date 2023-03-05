@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"mini-project-product/db"
 	"mini-project-product/helper"
+	"mini-project-product/middleware"
 	"mini-project-product/model/entity"
 	"mini-project-product/model/request"
 	"mini-project-product/model/response"
@@ -13,11 +14,19 @@ import (
 )
 
 func GetMyToko(c *fiber.Ctx) error {
-	// TODO: fix idUser from jwt
-	userId := 1
+	userData, err := middleware.GetUserData(c)
+	if err != nil {
+		var errors []string
+		errors = append(errors, err.Error())
+		response := helper.APIResponse("Failed to GET data", errors, false, nil)
+
+		return c.JSON(response)
+	}
+
+	userId := userData.ID
 	var tokos []entity.Toko
 
-	err := db.DB.Find(&tokos, "id_user = ?", userId).Error
+	err = db.DB.Find(&tokos, "id_user = ?", userId).Error
 	if err != nil {
 		var errors []string
 		errors = append(errors, err.Error())
@@ -69,8 +78,16 @@ func GetTokoByID(c *fiber.Ctx) error {
 }
 
 func UpdateToko(c *fiber.Ctx) error {
-	// TODO: fix idUser from jwt
-	userId := 1
+	userData, err := middleware.GetUserData(c)
+	if err != nil {
+		var errors []string
+		errors = append(errors, err.Error())
+		response := helper.APIResponse("Failed to GET data", errors, false, nil)
+
+		return c.JSON(response)
+	}
+
+	userId := userData.ID
 
 	tokoRequest := new(request.UpdateTokoRequest)
 	if err := c.BodyParser(tokoRequest); err != nil {
