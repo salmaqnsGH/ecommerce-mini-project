@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"mini-project-product/db"
 	"mini-project-product/helper"
 	"mini-project-product/middleware"
@@ -63,6 +62,22 @@ func RegisterUser(c *fiber.Ctx) error {
 		return c.JSON(response)
 	}
 
+	requestToko := request.CreateTokoRequest{
+		IDUser:   newUser.ID,
+		NamaToko: "",
+		URLFoto:  "",
+	}
+
+	// TODO: create transaction if failed to create toko user cannot be created
+	_, err = CreateToko(c, &requestToko)
+	if err != nil {
+		var errors []string
+		errors = append(errors, err.Error())
+		response := helper.APIResponse("Failed to POST data", errors, false, nil)
+
+		return c.JSON(response)
+	}
+
 	response := helper.APIResponse("Succeed to POST data", nil, true, "Register Succeed")
 	return c.JSON(response)
 }
@@ -103,8 +118,6 @@ func LoginUser(c *fiber.Ctx) error {
 
 		return c.JSON(response)
 	}
-
-	fmt.Println("user", user)
 
 	payload := entity.UserClaims{
 		ID:      user.ID,

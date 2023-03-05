@@ -274,3 +274,25 @@ func GetAllToko(c *fiber.Ctx) error {
 	response := helper.APIResponse("Succeed to GET data", nil, true, tokoResponses)
 	return c.JSON(response)
 }
+
+func CreateToko(c *fiber.Ctx, requestToko *request.CreateTokoRequest) (*entity.Toko, error) {
+
+	var validate = validator.New()
+	if err := validate.Struct(requestToko); err != nil {
+		return nil, err
+	}
+
+	newToko := &entity.Toko{
+		IDUser:   requestToko.IDUser,
+		NamaToko: requestToko.NamaToko,
+		URLFoto:  requestToko.URLFoto,
+	}
+
+	err := db.DB.Create(&newToko).Error
+	if err != nil {
+		return nil, err
+
+	}
+
+	return newToko, nil
+}
