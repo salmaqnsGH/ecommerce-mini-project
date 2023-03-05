@@ -1,13 +1,22 @@
 package main
 
 import (
+	"log"
 	"mini-project-product/db"
 	"mini-project-product/route"
+	"os"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
+	port := os.Getenv("PORT")
 
 	db.DBInit()
 
@@ -15,5 +24,5 @@ func main() {
 
 	route.GetUsers(app)
 
-	app.Listen(":8000")
+	app.Listen(":" + port)
 }

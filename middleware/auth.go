@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"fmt"
+	"os"
 
 	"mini-project-product/model/entity"
 
@@ -19,7 +20,8 @@ func EncodeJwt(payload entity.UserClaims) (string, error) {
 		"isAdmin": payload.IsAdmin,
 	})
 
-	hmacSecret := []byte("my_secret_key")
+	JWTSecretKey := os.Getenv("JWT_SECRET_KEY")
+	hmacSecret := []byte(JWTSecretKey)
 	tokenString, err := token.SignedString(hmacSecret)
 	if err != nil {
 		return "", err
@@ -39,7 +41,8 @@ func DecodeJwt(tokenString string) (*entity.UserClaims, error) {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
 		}
 
-		hmacSecret := []byte("my_secret_key")
+		JWTSecretKey := os.Getenv("JWT_SECRET_KEY")
+		hmacSecret := []byte(JWTSecretKey)
 		return hmacSecret, nil
 	})
 
@@ -58,7 +61,6 @@ func DecodeJwt(tokenString string) (*entity.UserClaims, error) {
 func IsAdmin(c *fiber.Ctx) (bool, error) {
 	token := c.Get("token")
 	decodedToken, err := DecodeJwt(token)
-	fmt.Println("decodedToken", decodedToken)
 	if err != nil {
 		return false, err
 	}
