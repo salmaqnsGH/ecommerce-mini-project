@@ -3,6 +3,7 @@ package controller
 import (
 	"mini-project-product/db"
 	"mini-project-product/helper"
+	"mini-project-product/middleware"
 	"mini-project-product/model/entity"
 	"mini-project-product/model/request"
 	"mini-project-product/model/response"
@@ -13,6 +14,20 @@ import (
 
 func GetCategories(c *fiber.Ctx) error {
 	// TODO: can only be accessed by admin
+	isAdmin, err := middleware.IsAdmin(c)
+
+	if err != nil {
+		return err
+	}
+
+	if !isAdmin {
+		var errors []string
+		errors = append(errors, "anda bukan admin bos!")
+		response := helper.APIResponse("Failed to GET data", errors, false, nil)
+
+		return c.JSON(response)
+	}
+
 	var categories []entity.Category
 	result := db.DB.Find(&categories)
 

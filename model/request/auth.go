@@ -13,3 +13,8 @@ type RegisterUserRequest struct {
 	IdKota       string `json:"id_kota" validate:"required"`
 	IsAdmin      bool   `json:"is_admin" default:"true"`
 }
+
+type LoginUserRequest struct {
+	NoTelp    string `json:"no_telp" validate:"required"`
+	KataSandi string `json:"kata_sandi" validate:"required"`
+}
